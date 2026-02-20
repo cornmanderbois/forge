@@ -17,6 +17,8 @@ import forge.game.event.IGameEventVisitor;
 import forge.game.player.Player;
 import forge.game.player.PlayerView;
 import forge.game.player.RegisteredPlayer;
+import forge.gamemodes.net.server.FServerManager;
+import forge.gamemodes.net.server.NetSoundBroadcaster;
 import forge.gamemodes.quest.QuestController;
 import forge.gui.FThreads;
 import forge.gui.GuiBase;
@@ -182,6 +184,9 @@ public class HostedMatch {
 
         game.subscribeToEvents(SoundSystem.instance);
         game.subscribeToEvents(visitor);
+        if (FServerManager.getInstance().isHosting()) {
+            game.subscribeToEvents(new NetSoundBroadcaster());
+        }
 
         final FCollectionView<Player> players = game.getPlayers();
         final String[] avatarIndices = FModel.getPreferences().getPref(FPref.UI_AVATARS).split(",");
@@ -397,6 +402,9 @@ public class HostedMatch {
             subGameCount++;
             event.subgame().subscribeToEvents(SoundSystem.instance);
             event.subgame().subscribeToEvents(visitor);
+            if (FServerManager.getInstance().isHosting()) {
+                event.subgame().subscribeToEvents(new NetSoundBroadcaster());
+            }
 
             final GameView gameView = event.subgame().getView();
 

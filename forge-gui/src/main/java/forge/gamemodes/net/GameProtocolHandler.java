@@ -1,8 +1,10 @@
 package forge.gamemodes.net;
 
 import forge.gamemodes.net.event.GuiGameEvent;
+import forge.gamemodes.net.event.PlaySoundEvent;
 import forge.gamemodes.net.event.ReplyEvent;
 import forge.gui.FThreads;
+import forge.sound.SoundSystem;
 import forge.gui.util.SOptionPane;
 import forge.localinstance.skin.FSkinProp;
 import io.netty.channel.ChannelHandlerContext;
@@ -29,6 +31,17 @@ public abstract class GameProtocolHandler<T> extends ChannelInboundHandlerAdapte
     public final void channelRead(final ChannelHandlerContext ctx, final Object msg) {
         final String[] catchedError = {""};
         System.out.println("Received: " + msg);
+        if (msg instanceof PlaySoundEvent) {
+            final PlaySoundEvent playSound = (PlaySoundEvent) msg;
+            FThreads.invokeInEdtNowOrLater(() -> {
+                if (playSound.getScriptedResourceName() != null && !playSound.getScriptedResourceName().isEmpty()) {
+                    SoundSystem.instance.play(playSound.getScriptedResourceName(), playSound.isSynchronized());
+                } else {
+                    SoundSystem.instance.play(playSound.getSoundEffectType(), playSound.isSynchronized());
+                }
+            });
+            return;
+        }
         if (msg instanceof ReplyEvent) {
             final ReplyEvent event = (ReplyEvent) msg;
             getReplyPool(ctx).complete(event.getIndex(), event.getReply());
