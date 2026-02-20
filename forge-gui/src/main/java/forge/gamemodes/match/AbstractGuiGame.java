@@ -525,7 +525,9 @@ public abstract class AbstractGuiGame implements IGuiGame, IMayViewCards {
         } else {
             timeStr = String.format("%d:%02d", elapsedSec / 60, elapsedSec % 60);
         }
-        showPromptMessageNoCancel(forPlayer, Localizer.getInstance().getMessage("lblWaitingForPlayer", waitingForPlayerName) + " (" + timeStr + ")");
+        // Build message directly to avoid MissingResourceException when lblWaitingForPlayer is missing from the loaded bundle
+        String message = "Waiting for " + waitingForPlayerName + "... (" + timeStr + ")";
+        showPromptMessageNoCancel(forPlayer, message);
     }
 
     protected void cancelWaitingTimer() {

@@ -96,6 +96,9 @@ public class Localizer {
             }
 
             if (english || forcedEnglish) {
+                if ("lblWaitingForPlayer".equals(key) && messageArguments.length > 0) {
+                    return "Waiting for " + messageArguments[0] + "...";
+                }
                 return "INVALID PROPERTY: '" + key + "' -- Translation missing from English?";
             }
             try {
@@ -104,6 +107,10 @@ public class Localizer {
             } catch (final IllegalArgumentException | MissingResourceException e) {
                 if (!silent) {
                     e.printStackTrace();
+                }
+                // Fallback for common key so UI never shows "INVALID PROPERTY" when bundle is missing it
+                if ("lblWaitingForPlayer".equals(key) && messageArguments.length > 0) {
+                    return "Waiting for " + messageArguments[0] + "...";
                 }
                 return "INVALID PROPERTY: '" + key + "' -- Translation missing from English locale?";
             }
